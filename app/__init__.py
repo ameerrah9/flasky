@@ -6,14 +6,14 @@ from flask_sqlalchemy import SQLAlchemy
 # "Versioning Control"
 from flask_migrate import Migrate
 
-    # Creating our Databse through our Instance of SQLAlchemy
-    # Create Instances of Imports
-    # GIve us access to the database operations
+# Creating our Databse through our Instance of SQLAlchemy
+# Create Instances of Imports
+# GIve us access to the database operations
 
-    # Database Representation
+# Database Representation
 db = SQLAlchemy()
 
-    # Migrations Respresentation
+# Migrations Respresentation
 migrate = Migrate()
 
 def create_app():
@@ -33,6 +33,9 @@ def create_app():
     # Connects db to migrate to our FLask app
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # Add import for Dog
+    from app.models.dog_model import Dog
 
     from .routes.dogs import dogs_bp
     app.register_blueprint(dogs_bp)

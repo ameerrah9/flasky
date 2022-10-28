@@ -1,73 +1,44 @@
-from flask import Blueprint, jsonify, abort, make_response
-
-# Hardcode data
-class Dog:
-    def __init__(self, id, name, breed, age, gender):
-        self.id = id
-        self.name = name
-        self.breed = breed
-        self.age = age
-        self.gender = gender
-
-# hardcoded database
-DOGS = [
-    Dog(1, 'John Cena', "pug", 34, "Male"),
-    Dog(2, 'Snoop', "hair doberman", 14, "Female"),
-    Dog(3, "Doug 'the Doctor', M.D.", "pompom", 10, "Male")
-]
+from app import db
+from app.models.dog_model import Dog
+from flask import Blueprint, jsonify, make_response, request
 
 dogs_bp = Blueprint('dogs_bp', __name__, url_prefix='/dogs')
 
-@dogs_bp.route('', methods=['GET'])
-def get_all_dogs():
-    dog_response = [vars(dog) for dog in DOGS]
-    return jsonify(dog_response)
+# ADD Post to Request
+# ADD Get to Request
+@dogs_bp.route("", methods=["GET", "POST"])
+# Change name to handle dogs
+def handle_dog():
+    if request.method == "GET":
+        dogs = Dog.query.all()
+        dogs_response = []
+        for dog in dogs:
+            dogs_response.append({
+                "id": dog.id,
+                "name": dog.name,
+                "breed": dog.breed,
+				"age": dog.age,
+				"gender": dog.gender
+            })
+        return jsonify(dogs_response)
+    elif request.method == "POST":
+        request_body = request.get_json()
 
-# GET ONE DOG? HOW?
-@dogs_bp.route('/<id>', methods=['GET'])     
-def get_one_dog(id):
-    # return dog as a dict
-    dog = validate_dog(id)
-    return dog
+        # Feel free to add a guard clause
+        if "name" not in request_body or "breed" not in request_body:
+            return make_response("Invalid Request, Name & Breed Can't Be Empty", 400)
+        # How we know about Dog
+        new_dog = Dog(
+        # You're looking for this key and assign it to name, breed, gender, age
+        name=request_body["name"],
+        breed=request_body["breed"],
+        age=request_body["age"],
+        gender=request_body["gender"]
+    )
 
-# Validation function
-def validate_dog(id):
-    # handle invalid data types such as non-ints
-    try:
-        dog_id = int(id)
-    except ValueError:
-        return {
-            "message": "Invalid dog id"
-        }, 400
+        # Add this new instance of dog to the database
+        db.session.add(new_dog)
+        db.session.commit()
 
-    # handle if id is not found
-    for dog in DOGS:
-        if dog.id == dog_id:
-            return vars(dog)
-
-    abort(make_response(jsonify(description="Resource not found"),404)) 
-    
-    
-
-
-        
-
-
-
-# def get_all_dogs():
-    # dog_response = []
-    # for dog in DOGS:
-    #     print(vars(dog))
-    #     dog_response.append(vars(dog))
-        # dog_response.append({
-        #     'id': dog.id,
-        #     'name': dog.name,
-        #     'age': dog.age,
-        #     'breed': dog.breed,
-        #     'gender': dog.gender
-        # })
-
-    # print(DOGS)
-    # print(dog_response)
-    # print(type(dog_response))
-    # print(type(jsonify(dog_response)))
+        # Successful response
+        return make_response(f"Dog {new_dog.name} has been successfully created!", 201)
