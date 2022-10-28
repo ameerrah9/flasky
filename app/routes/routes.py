@@ -1,19 +1,24 @@
-from flask import Blueprint, jsonify, abort, make_response
-
-class Cat:
-  def __init__(self, id, name, color, personality):
-    self.id = id
-    self.name = name
-    self.color = color
-    self.personality = personality
-
-cats = [
-  Cat(1, "Luna", "grey", "naughty"), 
-  Cat(2, "Orange Cat", "orange", "antagonistic"),
-  Cat(3, "Big Ears", "grey and white", "sleepy")
-]
+from flask import Blueprint, jsonify, abort, make_response, request
+from app.models.cat import Cat
+from app import db
 
 bp = Blueprint("cats", __name__, url_prefix="/cats")
+
+#==============================
+#       CREATE RESOURCE
+#==============================
+@bp.route("", methods=["POST"])
+def create_cat():
+  request_body = request.get_json()
+  new_cat = Cat(
+    name=request_body['name'], 
+    personality=request_body['personality'], 
+    color=request_body['color']
+  )
+  db.session.add(new_cat)
+  db.session.commit()
+
+  return make_response(f"Cat {new_cat.name} has been created", 201)
 
 #==============================
 #     GET ALL RESOURCES
@@ -21,14 +26,17 @@ bp = Blueprint("cats", __name__, url_prefix="/cats")
 @bp.route("", methods=["GET"])
 def get_all_cats():
   results_list = []
-  for cat in cats: 
+  all_cats = Cat.query.all()
+
+  for cat in all_cats:
     results_list.append({
-      "id": cat.id, 
-      "name": cat.name, 
+      "name": cat.name,
       "color": cat.color,
-      "personality": cat.personality
+      "personality": cat.personality,
+      "id": cat.id
     })
-  return jsonify(results_list)
+  
+  return jsonify(results_list),200
 
 #==============================
 #     GET ONE RESOURCE
