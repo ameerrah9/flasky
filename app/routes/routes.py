@@ -1,25 +1,7 @@
+from app import db
+from app.models.cat import Cat
 from flask import Blueprint, jsonify, abort, make_response
 
-class Cat:
-    def __init__(self, id, name, color, personality):
-        self.id = id
-        self.name = name
-        self.color = color
-        self.personality = personality
-
-    def to_cat_dict(self):
-        return dict(
-            id=self.id, 
-            name=self.name, 
-            color=self.color,
-            personality=self.personality
-    )
-
-cats = [
-    Cat(1, "Luna", "grey", "naughty"), 
-    Cat(2, "Orange Cat", "orange", "antagonistic"),
-    Cat(3, "Big Ears", "grey and white", "sleepy")
-]
 
 bp = Blueprint("cats", __name__, url_prefix="/cats")
 
@@ -46,3 +28,4 @@ def validate_cat(cat_id):
 def handle_cat(id):
     cat = validate_cat(id)
     return jsonify(cat.to_cat_dict())
+
