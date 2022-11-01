@@ -81,8 +81,8 @@ def validate_cat_id(id):
   except:
     abort(make_response({"message":f"cat {id} is an invalid id"}, 400))
 
-  for cat in cats:
-    if cat_id == cat.id:
-      return cat
-      
-  abort(make_response({"message":f"cat {id} not found"}, 404))
+  cat = Cat.query.get(cat_id)
+  if not cat:
+      abort(make_response({"message":f"cat {id} not found"}, 404))
+
+  return cat
