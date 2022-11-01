@@ -10,16 +10,16 @@ def validate_cat(cat_id):
     except:
         abort(make_response({"message":f"cat {cat_id} invalid"}, 400))
 
-    for cat in cats: 
-        if cat.id == cat_id:
-            return cat
+    cat = Cat.query.get(cat_id)
+    if not cat:
+        abort(make_response({"message":f"cat {cat_id} not found"}, 404))
 
-    abort(make_response({"message":f"cat {cat_id} not found"}, 404))
+    return cat
 
-# @bp.route("/<id>", methods=["GET"])
-# def handle_cat(id):
-#     cat = validate_cat(id)
-#     return jsonify(cat.to_cat_dict())
+@bp.route("/<id>", methods=["GET"])
+def handle_cat(id):
+    cat = validate_cat(id)
+    return jsonify(cat.to_dict()), 200
 
 @bp.route("", methods=["POST"])
 def create_cat():
@@ -39,4 +39,21 @@ def read_all_cats():
     cats_response = [cat.to_dict() for cat in cats]
     return jsonify(cats_response)
 
+@bp.route("/<id>", methods=["PUT"])
+def update_cat(id):
+    cat = validate_cat(id)
+    request_body = request.get_json()
 
+    cat.name = request_body["name"]
+    cat.color = request_body["color"]
+    cat.personality = request_body["personality"]
+
+    db.session.commit()
+    return make_response(f"Cat #{cat.id} successfully updated"), 200
+
+@bp.route("/<id>", methods=["DELETE"])
+def delete_cat(id):
+    cat = validate_cat(id)
+    db.session.delete(cat)
+    db.session.commit()
+    return make_response(f"Cat #{cat.id} successfully deleted"), 200
