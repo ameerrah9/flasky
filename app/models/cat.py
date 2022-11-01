@@ -5,11 +5,3 @@ class Cat(db.Model):
     name = db.Column(db.String, nullable=False)
     color = db.Column(db.String, nullable=False)
     personality = db.Column(db.String, nullable=False)
-
-    def to_dict(self):
-        return dict(
-            id=self.id, 
-            name=self.name, 
-            color=self.color,
-            personality=self.personality
-    )

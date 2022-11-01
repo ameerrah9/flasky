@@ -19,7 +19,12 @@ def validate_cat(cat_id):
 @bp.route("/<id>", methods=["GET"])
 def handle_cat(id):
     cat = validate_cat(id)
-    return jsonify(cat.to_dict()), 200
+    return jsonify(dict(
+        id=cat.id, 
+        name=cat.name, 
+        color=cat.color,
+        personality=cat.personality
+    )), 200
 
 @bp.route("", methods=["POST"])
 def create_cat():
@@ -36,7 +41,16 @@ def create_cat():
 @bp.route("", methods=["GET"])
 def read_all_cats():
     cats = Cat.query.all()
-    cats_response = [cat.to_dict() for cat in cats]
+    
+    cats_response = []
+    for cat in cats: 
+        cats_response.append(dict(
+            id=cat.id, 
+            name=cat.name, 
+            color=cat.color,
+            personality=cat.personality
+        ))
+
     return jsonify(cats_response)
 
 @bp.route("/<id>", methods=["PUT"])
