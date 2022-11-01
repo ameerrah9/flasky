@@ -69,6 +69,19 @@ def update_cat(id):
   return make_response(f"cat {id} successfully updated")
 
 #==============================
+#     DELETE RESOURCE
+#==============================
+@bp.route("/<id>", methods=["DELETE"])
+def delete_cat(id):
+  cat = validate_cat_id(id)
+
+  db.session.delete(cat)
+
+  db.session.commit()
+
+  return make_response(f"cat {id} successfully deleted")
+
+#==============================
 #     HELPER METHODS
 #==============================
 def validate_cat_id(id):
