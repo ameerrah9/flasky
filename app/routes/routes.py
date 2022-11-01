@@ -53,6 +53,22 @@ def get_one_cat(id):
   }), 200
 
 #==============================
+#     UPDATE RESOURCE
+#==============================
+@bp.route("/<id>", methods=["PUT"])
+def update_cat(id):
+  cat = validate_cat_id(id)
+  request_body = request.get_json()
+
+  cat.name = request_body["name"]
+  cat.color = request_body["color"]
+  cat.personality = request_body["personality"]
+
+  db.session.commit()
+
+  return make_response(f"cat {id} successfully updated")
+
+#==============================
 #     HELPER METHODS
 #==============================
 def validate_cat_id(id):
