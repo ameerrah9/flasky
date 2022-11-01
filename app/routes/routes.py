@@ -52,26 +52,6 @@ def get_one_cat(id):
     "personality": cat.personality
   }), 200
 
-#=======================================
-# GET ONE RESOURCE -- CLUTTERED VERSION
-#=======================================
-# def get_one_cat(id):
-#   try:
-#     cat_id = int(id)
-#   except:
-#     return {"message": f"{id} is invalid"}, 400
-
-#   for cat in cats:
-#     if cat_id == cat.id:
-#       return jsonify({
-#         "id": cat.id, 
-#         "name": cat.name, 
-#         "color": cat.color,
-#         "personality": cat.personality
-#       }), 200
-      
-#   return {"message": f"{cat_id} not found"}, 404
-
 #==============================
 #     HELPER METHODS
 #==============================
