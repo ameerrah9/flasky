@@ -4,34 +4,27 @@ from flask import Blueprint, jsonify, abort, make_response, request
 
 bp = Blueprint("cats", __name__, url_prefix="/cats")
 
-def validate_cat(cat_id):
+def validate_model(cls, model_id):
     try:
-        cat_id = int(cat_id)
+        model_id = int(model_id)
     except:
-        abort(make_response({"message":f"cat {cat_id} invalid"}, 400))
+        abort(make_response({"message":f"{cls.__name__} {model_id} invalid"}, 400))
 
-    cat = Cat.query.get(cat_id)
-    if not cat:
-        abort(make_response({"message":f"cat {cat_id} not found"}, 404))
+    model = cls.query.get(model_id)
+    if not model:
+        abort(make_response({"message":f"{cls.__name__} {model_id} not found"}, 404))
 
-    return cat
+    return model
 
 @bp.route("/<id>", methods=["GET"])
 def handle_cat(id):
-    cat = validate_cat(id)
-    return jsonify(dict(
-        id=cat.id, 
-        name=cat.name, 
-        color=cat.color,
-        personality=cat.personality
-    )), 200
+    cat = validate_model(Cat, id)
+    return jsonify(cat.to_dict()), 200
 
 @bp.route("", methods=["POST"])
 def create_cat():
     request_body = request.get_json()
-    new_cat = Cat(name=request_body["name"],
-        color=request_body["color"],
-        personality=request_body["personality"])
+    new_cat = Cat.from_dict(request_body)
 
     db.session.add(new_cat)
     db.session.commit()
@@ -40,22 +33,30 @@ def create_cat():
 
 @bp.route("", methods=["GET"])
 def read_all_cats():
-    cats = Cat.query.all()
+    personality_query = request.args.get("personality")
+    color_query = request.args.get("color")
+    limit_query = request.args.get("limit")
+
+    cat_query = Cat.query
+
+    if personality_query:
+        cat_query = cat_query.filter_by(personality=personality_query)
     
-    cats_response = []
-    for cat in cats: 
-        cats_response.append(dict(
-            id=cat.id, 
-            name=cat.name, 
-            color=cat.color,
-            personality=cat.personality
-        ))
+    if color_query:
+        cat_query = cat_query.filter_by(color=color_query)
+
+    if limit_query:
+        cat_query = cat_query.limit(limit_query)
+
+    cats = cat_query.all()
+
+    cats_response = [cat.to_dict() for cat in cats]
 
     return jsonify(cats_response)
 
 @bp.route("/<id>", methods=["PUT"])
 def update_cat(id):
-    cat = validate_cat(id)
+    cat = validate_model(Cat, id)
     request_body = request.get_json()
 
     cat.name = request_body["name"]
@@ -67,7 +68,7 @@ def update_cat(id):
 
 @bp.route("/<id>", methods=["DELETE"])
 def delete_cat(id):
-    cat = validate_cat(id)
+    cat = validate_model(Cat, id)
     db.session.delete(cat)
     db.session.commit()
     return make_response(f"Cat #{cat.id} successfully deleted"), 200
