@@ -28,8 +28,6 @@ def handle_dogs():
 
     dogs = Dog.query.all()
 
-    # dogs = Dog.query.filter_by(breed=breed_query).all()
-
     dogs_response = []
     for dog in dogs:
         dogs_response.append({
@@ -54,11 +52,11 @@ def create_dog():
         return make_response("Invalid Request, Name & Breed Can't Be Empty", 400)
     # How we know about Dog
     new_dog = Dog(
-    # You're looking for this key and assign it to name, breed, gender, age
-    name=request_body["name"],
-    breed=request_body["breed"],
-    age=request_body["age"],
-    gender=request_body["gender"]
+        # You're looking for this key and assign it to name, breed, gender, age
+        name=request_body["name"],
+        breed=request_body["breed"],
+        age=request_body["age"],
+        gender=request_body["gender"]
     )
 
     # Add this new instance of dog to the database
@@ -70,37 +68,46 @@ def create_dog():
 
 # Path/Endpoint to get a single dog
 # Include the id of the record to retrieve as a part of the endpoint
-@dogs_bp.route("/<dog_id>", methods=["GET", "PUT", "DELETE"])
+@dogs_bp.route("/<dog_id>", methods=["GET"])
 # GET /dog/id
 def handle_dog(dog_id):
     # Query our db to grab the dog that has the id we want:
     dog = Dog.query.get(dog_id)
 
-    if request.method == "GET":
-        # Send back a single JSON object (dictionary):
-        return {
-            "id": dog.id,
-            "name": dog.name,
-            "breed": dog.breed,
-            "age": dog.age,
-            "gender": dog.gender
-        }
-    elif request.method == "PUT":
-        request_body = request.get_json()
+    # Send back a single JSON object (dictionary):
+    return {
+        "id": dog.id,
+        "name": dog.name,
+        "breed": dog.breed,
+        "age": dog.age,
+        "gender": dog.gender
+    }
 
-        # Updated dog attributes are set:
-        dog.name = request_body["name"],
-        dog.breed = request_body["breed"],
-        dog.age = request_body["age"],
-        dog.gender = request_body["gender"]
+@dogs_bp.route("/<dog_id>", methods=["PUT"])
+# PUT /dog/id
+def _dog(dog_id):
+    dog = Dog.query.get(dog_id)
 
-        # Update this dog in the database
-        db.session.commit()
+    request_body = request.get_json()
 
-        # Sucessful response
-        return make_response(f"Dog {dog.name} has been successfully updated!", 200)
-    elif request.method == "DELETE":
-        db.session.delete(dog)
-        db.session.commit()
+    # Updated dog attributes are set:
+    dog.name = request_body["name"],
+    dog.breed = request_body["breed"],
+    dog.age = request_body["age"],
+    dog.gender = request_body["gender"]
 
-        return make_response(f"Dog {dog.name} successfully deleted", 202)
+    # Update this dog in the database
+    db.session.commit()
+
+    # Sucessful response
+    return make_response(f"Dog {dog.name} has been successfully updated!", 200)
+
+@dogs_bp.route("/<dog_id>", methods=["DELETE"])
+# Delete /dog/id
+def delete_dog(dog_id):
+    dog = Dog.query.get(dog_id)
+
+    db.session.delete(dog)
+    db.session.commit()
+
+    return make_response(f"Dog {dog.name} successfully deleted", 202)
