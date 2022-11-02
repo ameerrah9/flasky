@@ -10,11 +10,7 @@ bp = Blueprint("cats", __name__, url_prefix="/cats")
 @bp.route("", methods=["POST"])
 def create_cat():
   request_body = request.get_json()
-  new_cat = Cat(
-    name=request_body['name'], 
-    personality=request_body['personality'], 
-    color=request_body['color']
-  )
+  new_cat = Cat.from_dict(request_body)
   db.session.add(new_cat)
   db.session.commit()
 
@@ -25,44 +21,38 @@ def create_cat():
 #==============================
 @bp.route("", methods=["GET"])
 def get_all_cats():
-  results_list = []
-  all_cats = Cat.query.all()
+  color_param = request.args.get("color")
+  personality_param = request.args.get("personality")
 
-  for cat in all_cats:
-    results_list.append({
-      "name": cat.name,
-      "color": cat.color,
-      "personality": cat.personality,
-      "id": cat.id
-    })
+  if color_param:
+    cats = Cat.query.filter_by(color=color_param)
+  elif personality_param:
+    cats = Cat.query.filter_by(personality=personality_param)
+  else:
+    cats = Cat.query.all()
+
+  result_list = [cat.to_dict() for cat in cats]
   
-  return jsonify(results_list),200
+  return jsonify(results_list), 200
 
 #==============================
 #     GET ONE RESOURCE
 #==============================
 @bp.route("/<id>", methods=["GET"])
 def get_one_cat(id):
-  cat = validate_cat_id(id)
+  cat = validate_id(Cat,id)
 
-  return jsonify({
-    "id": cat.id, 
-    "name": cat.name, 
-    "color": cat.color,
-    "personality": cat.personality
-  }), 200
+  return jsonify(cat.to_dict()), 200
 
 #==============================
 #     UPDATE RESOURCE
 #==============================
 @bp.route("/<id>", methods=["PUT"])
 def update_cat(id):
-  cat = validate_cat_id(id)
+  cat = validate_id(Cat,id)
   request_body = request.get_json()
 
-  cat.name = request_body["name"]
-  cat.color = request_body["color"]
-  cat.personality = request_body["personality"]
+  cat.update(request_body)
 
   db.session.commit()
 
@@ -73,7 +63,7 @@ def update_cat(id):
 #==============================
 @bp.route("/<id>", methods=["DELETE"])
 def delete_cat(id):
-  cat = validate_cat_id(id)
+  cat = validate_id(Cat,id)
 
   db.session.delete(cat)
 
@@ -84,14 +74,14 @@ def delete_cat(id):
 #==============================
 #     HELPER METHODS
 #==============================
-def validate_cat_id(id):
+def validate_id(class_obj,id):
   try:
-    cat_id = int(id)
+    id = int(id)
   except:
-    abort(make_response({"message":f"cat {id} is an invalid id"}, 400))
+    abort(make_response({"message":f"{class_obj} {id} is an invalid id"}, 400))
 
-  cat = Cat.query.get(cat_id)
-  if not cat:
-      abort(make_response({"message":f"cat {id} not found"}, 404))
+  query_result = class_obj.query.get(id)
+  if not query_result:
+      abort(make_response({"message":f"{class_obj} {id} not found"}, 404))
 
-  return cat
+  return query_result
