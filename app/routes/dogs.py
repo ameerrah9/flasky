@@ -85,7 +85,7 @@ def handle_dog(dog_id):
 
 @dogs_bp.route("/<dog_id>", methods=["PUT"])
 # PUT /dog/id
-def _dog(dog_id):
+def edit_dog(dog_id):
     dog = Dog.query.get(dog_id)
 
     request_body = request.get_json()
