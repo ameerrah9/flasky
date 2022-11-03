@@ -31,7 +31,7 @@ def get_all_cats():
   else:
     cats = Cat.query.all()
 
-  result_list = [cat.to_dict() for cat in cats]
+  results_list = [cat.to_dict() for cat in cats]
   
   return jsonify(results_list), 200
 
