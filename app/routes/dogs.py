@@ -38,9 +38,9 @@ def handle_dogs():
             "gender": dog.gender
         })
 
-    if not dogs_response:
-        return make_response(jsonify(f"There are no {breed_query} dogs"))
-    return jsonify(dogs_response)
+    # if not dogs_response:
+    #     return make_response(jsonify(f"There are no {breed_query} dogs"))
+    return jsonify(dogs_response), 200
 
 @dogs_bp.route("", methods=["POST"])
 # Change name to handle dogs

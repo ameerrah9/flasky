@@ -29,3 +29,23 @@ def client(app):
     # depends on app that references another fixture
     # holds the reference to the test interface
     return app.test_client()
+
+@pytest.fixture
+def two_saved_dogs(app):
+    # Arrange
+    winston = Dog(age=2,
+                breed="terrier",
+                gender="female",
+                name="Winston")
+    winter = Dog(age=10,
+                breed="terrier",
+                gender="male",
+                name="Winter")
+
+    db.session.add_all([winston, winter])
+    # Alternatively, we could do
+    # db.session.add(winston)
+    # db.session.add(winter)
+    db.session.commit()
+
+
