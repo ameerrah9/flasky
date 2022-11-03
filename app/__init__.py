@@ -1,34 +1,28 @@
 from flask import Flask
-# Translator from Flask to SQL
 from flask_sqlalchemy import SQLAlchemy
-
-# Migrater tool, helps us keep track of chances to our table
-# "Versioning Control"
 from flask_migrate import Migrate
 
-# Creating our Databse through our Instance of SQLAlchemy
-# Create Instances of Imports
-# GIve us access to the database operations
+# dotenv allows us to read env variables
+from dotenv import load_dotenv
+import os
+load_dotenv() 
 
-# Database Representation
 db = SQLAlchemy()
-
-# Migrations Respresentation
 migrate = Migrate()
 
-def create_app():
-    # __name__ stores the name of the module we're in
+def create_app(test_config=None):
     app = Flask(__name__)
-
-    # Where I am listening for my database
-    # Ignore a warning
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 
     # Connects Flask to the Database
     # Tells FLask where to find our database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgres@localhost:5432/flasky_development'
-
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    if not test_config:
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+            "SQLALCHEMY_DATABASE_URI")
+    else:
+        app.config["TESTING"] = True
+        app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+            "SQLALCHEMY_TEST_DATABASE_URI")
 
     # Connects db to migrate to our FLask app
     db.init_app(app)
