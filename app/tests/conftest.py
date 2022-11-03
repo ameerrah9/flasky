@@ -41,7 +41,6 @@ def two_saved_dogs(app):
                 breed="terrier",
                 gender="male",
                 name="Winter")
-
     db.session.add_all([winston, winter])
     # Alternatively, we could do
     # db.session.add(winston)
