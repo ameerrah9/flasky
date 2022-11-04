@@ -28,8 +28,10 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Add import for Dog
+    # Add import for Dog, Caretaker
     from app.models.dog_model import Dog
+    from app.models.caretaker import Caretaker
+
 
     from .routes.dogs import dogs_bp
     app.register_blueprint(dogs_bp)
