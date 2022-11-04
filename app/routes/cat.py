@@ -41,7 +41,7 @@ def read_all_cats():
 
     if personality_query:
         cat_query = cat_query.filter_by(personality=personality_query)
-    
+
     if color_query:
         cat_query = cat_query.filter_by(color=color_query)
 

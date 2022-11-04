@@ -22,9 +22,12 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from .routes.routes import bp
-    app.register_blueprint(bp)
+    from .routes import cat
+    from .routes import caretaker
+    app.register_blueprint(cat.bp)
+    app.register_blueprint(caretaker.bp)
 
     from app.models.cat import Cat
+    from app.models.caretaker import Caretaker
 
     return app
