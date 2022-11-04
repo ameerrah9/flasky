@@ -36,4 +36,7 @@ def create_app(test_config=None):
     from .routes.dogs import dogs_bp
     app.register_blueprint(dogs_bp)
 
+    from .routes.caretaker_routes import caretaker_bp
+    app.register_blueprint(caretaker_bp)
+
     return app
