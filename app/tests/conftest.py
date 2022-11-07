@@ -3,7 +3,7 @@ from app import create_app
 from app import db
 #create a new database session after a request as described below.
 from flask.signals import request_finished
-from app.models.dog_model import Dog
+from app.models.dog import Dog
 
 # Create test versions of our flask app and database
 @pytest.fixture

@@ -1,5 +1,7 @@
 # We need access to SQLAlchemy
 from app import db
+from flask import abort, make_response
+
 
 # Create the class that is inherited from the db.Model from SQLAlchemy
 class Dog(db.Model):
@@ -19,4 +21,23 @@ class Dog(db.Model):
             "age": self.age,
             "gender": self.gender
         }
+
+    @classmethod
+    def from_dict(cls, request_body):
+        return cls(
+            name=request_body["name"],
+            breed=request_body["breed"],
+            age=request_body["age"],
+            gender=request_body["gender"]
+        )
+
+    def update(self, req_body):
+        try: 
+            self.name = req_body["name"]
+            self.breed = req_body["breed"]
+            self.age = req_body["age"]
+            self.gender = req_body["gender"]
+        except KeyError as error:
+            abort(make_response({'message': f"Missing attribute: {error}"}))
+
 

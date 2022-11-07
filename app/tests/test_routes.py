@@ -1,4 +1,4 @@
-from app.models.dog_model import Dog
+from app.models.dog import Dog
 
 def test_get_all_dogs_with_empty_db_return_empty_list(client):
     # 'client' is the fixture we registered from the conftest.py, 

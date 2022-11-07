@@ -1,6 +1,6 @@
 from app import db
 from app.models.caretaker import Caretaker
-from app.models.dog_model import Dog
+from app.models.dog import Dog
 from flask import Blueprint, jsonify, abort, make_response, request
 
 caretaker_bp = Blueprint("caretaker_bp", __name__, url_prefix="/caretakers")
