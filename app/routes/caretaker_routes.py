@@ -1,6 +1,6 @@
 from app import db
 from app.models.caretaker import Caretaker
-from app.models.dog import Dog
+from app.models.dog_model import Dog
 from app.routes.routes_helper import *
 from flask import Blueprint, jsonify, abort, make_response, request
 
