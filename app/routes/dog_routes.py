@@ -25,52 +25,36 @@ def handle_dogs():
     return jsonify(dogs_response), 200
 
 @dogs_bp.route("", methods=["POST"])
-# Change name to handle dogs
 def create_dog():
     request_body = request.get_json()
 
-    # Feel free to add a guard clause
     if "name" not in request_body or "breed" not in request_body:
         return make_response("Invalid Request, Name & Breed Can't Be Empty", 400)
-    # How we know about Dog
+    
     new_dog = Dog.from_dict(request_body)
 
-    # Add this new instance of dog to the database
     db.session.add(new_dog)
     db.session.commit()
 
-    # Successful response
     return make_response(f"Dog {new_dog.name} has been successfully created!", 201)
 
-# Path/Endpoint to get a single dog
-# Include the id of the record to retrieve as a part of the endpoint
-@dogs_bp.route("/<dog_id>", methods=["GET"])
-# GET /dog/id
-def handle_dog(dog_id):
-    # Query our db to grab the dog that has the id we want:
-    dog = get_record_by_id(Dog, dog_id)
 
-    # Send back a single JSON object (dictionary):
+@dogs_bp.route("/<dog_id>", methods=["GET"])
+
+def handle_dog(dog_id):
+    dog = get_record_by_id(Dog, dog_id)
     return dog.to_dict()
 
 @dogs_bp.route("/<dog_id>", methods=["PUT"])
-# PUT /dog/id
 def edit_dog(dog_id):
     dog = get_record_by_id(Dog, dog_id)
-
     request_body = request.get_json()
-
-    # Updated dog attributes are set:
     dog.update(request_body)
-
-    # Update this dog in the database
     db.session.commit()
 
-    # Sucessful response
     return make_response(f"Dog {dog.name} has been successfully updated!", 200)
 
 @dogs_bp.route("/<dog_id>", methods=["DELETE"])
-# Delete /dog/id
 def delete_dog(dog_id):
     dog = get_record_by_id(Dog, dog_id)
 
