@@ -1,6 +1,7 @@
 from crypt import methods
 from app import db
 from app.models.dog_model import Dog
+from app.routes.routes_helper import error_message, get_record_by_id
 from flask import Blueprint, jsonify, make_response, request
 
 dogs_bp = Blueprint('dogs_bp', __name__, url_prefix='/dogs')
@@ -28,15 +29,17 @@ def handle_dogs():
 
     dogs = Dog.query.all()
 
-    dogs_response = []
-    for dog in dogs:
-        dogs_response.append({
-            "id": dog.id,
-            "name": dog.name,
-            "breed": dog.breed,
-            "age": dog.age,
-            "gender": dog.gender
-        })
+    # dogs_response = []
+    # for dog in dogs:
+    #     dogs_response.append({
+    #         "id": dog.id,
+    #         "name": dog.name,
+    #         "breed": dog.breed,
+    #         "age": dog.age,
+    #         "gender": dog.gender
+    #     })
+
+    dogs_response = [dog.to_dict() for dog in dogs]
 
     # if not dogs_response:
     #     return make_response(jsonify(f"There are no {breed_query} dogs"))
@@ -51,13 +54,17 @@ def create_dog():
     if "name" not in request_body or "breed" not in request_body:
         return make_response("Invalid Request, Name & Breed Can't Be Empty", 400)
     # How we know about Dog
-    new_dog = Dog(
-        # You're looking for this key and assign it to name, breed, gender, age
-        name=request_body["name"],
-        breed=request_body["breed"],
-        age=request_body["age"],
-        gender=request_body["gender"]
-    )
+
+    # new_dog = Dog(
+    #     # You're looking for this key and assign it to name, breed, gender, age
+    #     name=request_body["name"],
+    #     breed=request_body["breed"],
+    #     age=request_body["age"],
+    #     gender=request_body["gender"]
+    # )
+    
+    # refactored version
+    new_dog = Dog.from_dict(request_body)
 
     # Add this new instance of dog to the database
     db.session.add(new_dog)
@@ -72,16 +79,19 @@ def create_dog():
 # GET /dog/id
 def handle_dog(dog_id):
     # Query our db to grab the dog that has the id we want:
-    dog = Dog.query.get(dog_id)
+    dog = get_record_by_id(Dog, dog_id)
 
     # Send back a single JSON object (dictionary):
-    return {
-        "id": dog.id,
-        "name": dog.name,
-        "breed": dog.breed,
-        "age": dog.age,
-        "gender": dog.gender
-    }
+    # return {
+    #     "id": dog.id,
+    #     "name": dog.name,
+    #     "breed": dog.breed,
+    #     "age": dog.age,
+    #     "gender": dog.gender
+    # }
+
+    # refactored version
+    return dog.to_dict(), 200
 
 @dogs_bp.route("/<dog_id>", methods=["PUT"])
 # PUT /dog/id
@@ -91,10 +101,13 @@ def edit_dog(dog_id):
     request_body = request.get_json()
 
     # Updated dog attributes are set:
-    dog.name = request_body["name"],
-    dog.breed = request_body["breed"],
-    dog.age = request_body["age"],
-    dog.gender = request_body["gender"]
+    # dog.name = request_body["name"],
+    # dog.breed = request_body["breed"],
+    # dog.age = request_body["age"],
+    # dog.gender = request_body["gender"]
+
+    #refactored version
+    dog.update(request_body)
 
     # Update this dog in the database
     db.session.commit()
