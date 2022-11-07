@@ -2,12 +2,12 @@ from flask import Blueprint, jsonify, abort, make_response, request
 from app.models.cat import Cat
 from app import db
 
-bp = Blueprint("cats", __name__, url_prefix="/cats")
+cats_bp = Blueprint("cats", __name__, url_prefix="/cats")
 
 #==============================
 #       CREATE RESOURCE
 #==============================
-@bp.route("", methods=["POST"])
+@cats_bp.route("", methods=["POST"])
 def create_cat():
   request_body = request.get_json()
   new_cat = Cat.from_dict(request_body)
@@ -19,7 +19,7 @@ def create_cat():
 #==============================
 #     GET ALL RESOURCES
 #==============================
-@bp.route("", methods=["GET"])
+@cats_bp.route("", methods=["GET"])
 def get_all_cats():
   color_param = request.args.get("color")
   personality_param = request.args.get("personality")
@@ -38,7 +38,7 @@ def get_all_cats():
 #==============================
 #     GET ONE RESOURCE
 #==============================
-@bp.route("/<id>", methods=["GET"])
+@cats_bp.route("/<id>", methods=["GET"])
 def get_one_cat(id):
   cat = validate_id(Cat,id)
 
@@ -47,7 +47,7 @@ def get_one_cat(id):
 #==============================
 #     UPDATE RESOURCE
 #==============================
-@bp.route("/<id>", methods=["PUT"])
+@cats_bp.route("/<id>", methods=["PUT"])
 def update_cat(id):
   cat = validate_id(Cat,id)
   request_body = request.get_json()
@@ -61,7 +61,7 @@ def update_cat(id):
 #==============================
 #     DELETE RESOURCE
 #==============================
-@bp.route("/<id>", methods=["DELETE"])
+@cats_bp.route("/<id>", methods=["DELETE"])
 def delete_cat(id):
   cat = validate_id(Cat,id)
 

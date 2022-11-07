@@ -6,13 +6,16 @@ class Cat(db.Model):
   name = db.Column(db.String)
   color = db.Column(db.String)
   personality = db.Column(db.String)
+  caretaker_id = db.Column(db.Integer, db.ForeignKey("caretaker.id"))
+  caretaker = db.relationship("Caretaker", back_populates="cats")
 
   def to_dict(self):
     return {
       "name": self.name,
       "color": self.color,
       "personality": self.personality,
-      "id": self.id
+      "id": self.id,
+      "caretaker_id": self.caretaker_id
     }
 
   @classmethod
