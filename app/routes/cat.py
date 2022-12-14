@@ -66,6 +66,14 @@ def update_cat(id):
     db.session.commit()
     return make_response(f"Cat #{cat.id} successfully updated"), 200
 
+@bp.route("/<id>/pet", methods=["PATCH"])
+def pet_cat_with_id(id):
+    cat = validate_model(Cat, id)
+    cat.pet_count += 1
+
+    db.session.commit()
+    return jsonify(cat.to_dict())
+
 @bp.route("/<id>", methods=["DELETE"])
 def delete_cat(id):
     cat = validate_model(Cat, id)
