@@ -18,7 +18,7 @@ def handle_dogs():
     if age_query:
         dog_query = dog_query.filter_by(age=age_query)
 
-    dogs = Dog.query.all()
+    dogs = dog_query.order_by(Dog.id).all()
 
     dogs_response = [dog.to_dict() for dog in dogs]
 
@@ -63,7 +63,7 @@ def delete_dog(dog_id):
 
     return make_response(f"Dog {dog.name} successfully deleted", 202)
 
-@dogs_bp.route("/<dog_id>", methods=["PATCH"])
+@dogs_bp.route("/<dog_id>/pet", methods=["PATCH"])
 def update_dog_pet_count(dog_id):
     dog = get_record_by_id(Dog, dog_id)
 
