@@ -10,6 +10,8 @@ class Dog(db.Model):
     breed = db.Column(db.String)
     age = db.Column(db.Integer)
     gender = db.Column(db.String, default="non-binary")
+    cuteness = db.Column(db.Integer)
+    petCount = db.Column(db.Integer)
     caretaker_id = db.Column(db.Integer, db.ForeignKey('caretaker.id'))
     caretaker = db.relationship("Caretaker", back_populates="dogs")
 
@@ -19,7 +21,9 @@ class Dog(db.Model):
             "name": self.name,
             "breed": self.breed,
             "age": self.age,
-            "gender": self.gender
+            "gender": self.gender,
+            "cuteness": self.cuteness,
+            "petCount": self.petCount
         }
 
     @classmethod
@@ -28,7 +32,9 @@ class Dog(db.Model):
             name=request_body["name"],
             breed=request_body["breed"],
             age=request_body["age"],
-            gender=request_body["gender"]
+            gender=request_body["gender"],
+            cuteness=request_body["cuteness"],
+            petCount=request_body["petCount"]
         )
 
     def update(self, req_body):
@@ -37,6 +43,8 @@ class Dog(db.Model):
             self.breed = req_body["breed"]
             self.age = req_body["age"]
             self.gender = req_body["gender"]
+            self.cuteness = req_body["cuteness"]
+            self.petCount = req_body["petCount"]
         except KeyError as error:
             abort(make_response({'message': f"Missing attribute: {error}"}))
 
