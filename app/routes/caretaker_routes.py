@@ -36,6 +36,7 @@ def create_dog(id):
 
     return make_response(jsonify(f"Dog {new_dog.name} cared by {caretaker.name} successfully created"), 201)
 
+
 @caretaker_bp.route("/<id>/dogs", methods=["GET"])
 def read_dogs_of_caretaker(id):
     caretaker = get_record_by_id(Dog, id)
