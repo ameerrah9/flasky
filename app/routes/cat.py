@@ -29,7 +29,7 @@ def create_cat():
     db.session.add(new_cat)
     db.session.commit()
 
-    return make_response(f"Cat {new_cat.name} successfully created", 201)
+    return jsonify(new_cat.to_dict()), 201
 
 @bp.route("", methods=["GET"])
 def read_all_cats():
@@ -62,9 +62,10 @@ def update_cat(id):
     cat.name = request_body["name"]
     cat.color = request_body["color"]
     cat.personality = request_body["personality"]
+    cat.pet_count = request_body["pet_count"]
 
     db.session.commit()
-    return make_response(f"Cat #{cat.id} successfully updated"), 200
+    return jsonify(cat.to_dict())
 
 @bp.route("/<id>/pet", methods=["PATCH"])
 def pet_cat_with_id(id):
@@ -77,6 +78,8 @@ def pet_cat_with_id(id):
 @bp.route("/<id>", methods=["DELETE"])
 def delete_cat(id):
     cat = validate_model(Cat, id)
+    response_body = cat.to_dict()
     db.session.delete(cat)
     db.session.commit()
-    return make_response(f"Cat #{cat.id} successfully deleted"), 200
+    return jsonify(response_body)
+    
