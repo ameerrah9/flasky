@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from dotenv import load_dotenv
+from flask_cors import CORS
 import os
 
 db = SQLAlchemy()
@@ -29,5 +30,8 @@ def create_app(test_config=None):
 
     from app.models.cat import Cat
     from app.models.caretaker import Caretaker
+
+    app.config['CORS_HEADERS'] = 'Content-Type'
+    CORS(app)
 
     return app

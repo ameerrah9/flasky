@@ -48,7 +48,7 @@ def read_all_cats():
     if limit_query:
         cat_query = cat_query.limit(limit_query)
 
-    cats = cat_query.all()
+    cats = cat_query.order_by(Cat.id).all()
 
     cats_response = [cat.to_dict() for cat in cats]
 
