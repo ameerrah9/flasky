@@ -62,3 +62,12 @@ def delete_dog(dog_id):
     db.session.commit()
 
     return make_response(f"Dog {dog.name} successfully deleted", 202)
+
+@dogs_bp.route("/<dog_id>", methods=["PATCH"])
+def update_dog_pet_count(dog_id):
+    dog = get_record_by_id(Dog, dog_id)
+
+    dog.petCount += 1
+    db.session.commit()
+
+    return make_response(f"Dog {dog.name} successfully petted", 202)

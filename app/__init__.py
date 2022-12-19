@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 
 # dotenv allows us to read env variables
 from dotenv import load_dotenv
@@ -39,4 +40,6 @@ def create_app(test_config=None):
     from .routes.caretaker_routes import caretaker_bp
     app.register_blueprint(caretaker_bp)
 
+    app.config['CORS_HEADERS'] = 'Content-Type'
+    CORS(app)
     return app
