@@ -94,8 +94,24 @@ def handle_crystals():
 # define a route for getting all crystals
 @crystal_bp.route("", methods=["GET"])
 def read_all_crystals():
+    
+    # filter the crystal query results
+    # to those whose color match the
+    # query param
+    color_query = request.args.get("color")
+    # filter the crystal query results
+    # to those whose powers match the
+    # query param
+    powers_query = request.args.get("powers")
+    
+    if color_query:
+        crystals = Crystal.query.filter_by(color=color_query)
+    elif powers_query:
+        crystals = Crystal.query.filter_by(powers=powers_query)
+    else:
+        crystals = Crystal.query.all()
+        
     crystals_response = []
-    crystals = Crystal.query.all()
     
     for crystal in crystals:
         crystals_response.append({
