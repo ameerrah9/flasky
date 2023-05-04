@@ -89,7 +89,7 @@ def handle_crystals():
     db.session.add(new_crystal)
     db.session.commit()
     
-    return make_response(f"Yayyyy Crystal {new_crystal.name} successfully created!", 201)
+    return jsonify(f"Yayyyy Crystal {new_crystal.name} successfully created!"), 201
 
 # define a route for getting all crystals
 @crystal_bp.route("", methods=["GET"])
