@@ -61,30 +61,26 @@ crystal_bp = Blueprint("crystals", __name__, url_prefix="/crystals")
 #     }
 
 # responsible for validating and returning crytstal instance 
-def validate_crystal(crystal_id):
+def validate_model(cls, model_id):
     try:
-        crystal_id = int(crystal_id)
+        model_id = int(model_id)
     except:
-        abort(make_response({"message": f"{crystal_id} is not a valid type ({type(crystal_id)}). Must be an integer)"}, 400))
+        abort(make_response({"message": f"{model_id} is not a valid type ({type(model_id)}). Must be an integer)"}, 400))
 
-    crystal = Crystal.query.get(crystal_id)
+    model = cls.query.get(model_id)
     
-    if not crystal:
-        abort(make_response({"message": f"crystal {crystal_id} does not exist"}, 404))
+    if not model:
+        abort(make_response({"message": f"{cls.__name__} {model_id} does not exist"}, 404))
         
-    return crystal
+    return model
 
 @crystal_bp.route("", methods=['POST'])
 
 # define a route for creating a crystal resource
-def handle_crystals():
+def create_crystal():
     request_body = request.get_json()
     
-    new_crystal = Crystal(
-        name = request_body["name"],
-        color = request_body["color"],
-        powers = request_body["powers"]
-    )
+    new_crystal = Crystal.from_dict(request_body)
     
     db.session.add(new_crystal)
     db.session.commit()
@@ -114,12 +110,7 @@ def read_all_crystals():
     crystals_response = []
     
     for crystal in crystals:
-        crystals_response.append({
-            "id": crystal.id,
-            "name": crystal.name,
-            "color": crystal.color,
-            "powers": crystal.powers
-        })
+        crystals_response.append(crystal.to_dict())
     
     return jsonify(crystals_response)
 
@@ -128,22 +119,17 @@ def read_all_crystals():
 @crystal_bp.route("/<crystal_id>", methods=["GET"])
 def read_one_crystal(crystal_id):
     # Query our db to grab the crystal that has the id we want
-    crystal = validate_crystal(crystal_id)
+    crystal = validate_model(Crystal, crystal_id)
     
     # show a single crystal
-    return {
-        "id": crystal.id,
-        "name": crystal.name,
-        "color": crystal.color,
-        "powers": crystal.powers
-    }, 200
+    return crystal.to_dict(), 200
 
 # define a route for updating a crystal
 # PUT /crystals/<crystal_id>
 @crystal_bp.route("/<crystal_id>", methods=["PUT"])
 def update_crystal(crystal_id):
     # Query our db to grab the crystal that has the id we want
-    crystal = validate_crystal(crystal_id)
+    crystal = validate_model(Crystal, crystal_id)
     
     request_body = request.get_json()
     
@@ -154,18 +140,13 @@ def update_crystal(crystal_id):
     db.session.commit()
     
     # send back the updated crystal
-    return {
-        "id": crystal.id,
-        "name": crystal.name,
-        "color": crystal.color,
-        "powers": crystal.powers
-    }, 200
+    return crystal.to_dict(), 200
     
 # define a route for deleting a crystal
 # DELETE /crystals/<crystal_id>
 @crystal_bp.route("/<crystal_id>", methods=["DELETE"])
 def delete_crystal(crystal_id):
-    crystal = validate_crystal(crystal_id)
+    crystal = validate_model(Crystal, crystal_id)
     
     db.session.delete(crystal)
     db.session.commit()
