@@ -143,6 +143,19 @@ def update_crystal(crystal_id):
     
     # send back the updated crystal
     return crystal.to_dict(), 200
+
+@crystal_bp.route('/<crystal_id>', methods=['PATCH'])
+def charge_crystal(crystal_id):
+     crystal = validate_model(Crystal, crystal_id)
+
+     if not crystal.charges:
+        crystal.charges = 0
+
+     crystal.charges = crystal.charges + 1
+
+     db.session.commit()
+
+     return crystal.to_dict(), 200
     
 # define a route for deleting a crystal
 # DELETE /crystals/<crystal_id>
